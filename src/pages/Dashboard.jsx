@@ -1,7 +1,28 @@
 const members = [
-  { id: 1, name: 'Anbu Damodaran', initials: 'AD' },
-  { id: 2, name: 'Jacob Knowlton', initials: 'JK' },
-  { id: 3, name: 'Adam Kazi', initials: 'AK' },
+  {
+    id: 1,
+    name: 'Anbu Damodaran',
+    initials: 'AD',
+    today: ['Take out recycling'],
+    tomorrow: ['Wash dishes', 'Water plants'],
+    thisWeek: ['Buy toilet paper', 'Vacuum the living room'],
+  },
+  {
+    id: 2,
+    name: 'Jacob Knowlton',
+    initials: 'JK',
+    today: ['Wipe kitchen counters'],
+    tomorrow: ['Walk the dog', 'Clean the bathroom mirror'],
+    thisWeek: ['Pick up groceries', 'Mop the hallway'],
+  },
+  {
+    id: 3,
+    name: 'Adam Kazi',
+    initials: 'AK',
+    today: ['Sort the mail'],
+    tomorrow: ['Empty the dishwasher', 'Take out trash'],
+    thisWeek: ['Change bed sheets', 'Clean the fridge shelf'],
+  },
 ]
 
 function Stats({ tasksDueToday, pendingTasksDue }) {
@@ -23,22 +44,48 @@ function Stats({ tasksDueToday, pendingTasksDue }) {
 function Card({ member }) {
   return (
     <div className='card'>
-      <div className='card-avatar'>{member.initials}</div>
       <h2>{member.name}</h2>
 
       <div className='task-list'>
         <h3>Today</h3>
-        <input type='checkbox' aria-label='Today task' />
+        <ul>
+          {member.today.map((task) => (
+            <li key={task}>
+              <label>
+                <input type='checkbox' />
+                {task}
+              </label>
+            </li>
+          ))}
+        </ul>
       </div>
 
       <div className='task-list'>
         <h3>Tomorrow</h3>
-        <input type='checkbox' aria-label='Tomorrow task' />
+        <ul>
+          {member.tomorrow.map((task) => (
+            <li key={task}>
+              <label>
+                <input type='checkbox' />
+                {task}
+              </label>
+            </li>
+          ))}
+        </ul>
       </div>
 
       <div className='task-list'>
         <h3>This Week</h3>
-        <input type='checkbox' aria-label='This Week task' />
+        <ul>
+          {member.thisWeek.map((task) => (
+            <li key={task}>
+              <label>
+                <input type='checkbox' />
+                {task}
+              </label>
+            </li>
+          ))}
+        </ul>
       </div>
     </div>
   )
@@ -60,7 +107,7 @@ export default function Dashboard({ name }) {
 
   return (
     <>
-      <h2>Hi {name}, welcome to your dashboard!</h2>
+      <h2 className='page-title'>Hi {name}, welcome to your dashboard!</h2>
       <Stats tasksDueToday={tasksDueToday} pendingTasksDue={pendingTasksDue} />
       <Board members={members} />
     </>
