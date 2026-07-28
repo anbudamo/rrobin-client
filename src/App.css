@@ -1,6 +1,8 @@
 .app-layout {
   display: flex;
   min-height: 100vh;
+  background: var(--bg);
+  color: var(--text);
 }
 
 .page-content {
@@ -12,18 +14,42 @@
   text-align: left;
 }
 
+.page-subtitle {
+  text-align: left;
+  margin-bottom: 16px;
+}
+
 .app-header {
   display: flex;
   justify-content: flex-end;
   gap: 12px;
 }
 
+.notification-button,
+.profile-button {
+  width: 38px;
+  height: 38px;
+  border-radius: 50%;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+  cursor: pointer;
+}
+
+.notification-button:hover,
+.profile-button:hover {
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+}
+
 .sidebar {
   height: 100vh;
   width: 220px;
   padding: 24px;
-  border: 2px solid #D9D9D9;
-  background: #F9F7F5;
+  border: none;
+  border-right: 1px solid var(--border);
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
   display: flex;
   flex-direction: column;
   align-items: flex-start;
@@ -35,7 +61,25 @@
   display: flex;
   flex-direction: column;
   align-items: flex-start;
-  gap: 8px;
+  gap: 6px;
+  width: 100%;
+}
+
+.navigation nav button {
+  width: 100%;
+  padding: 8px 12px;
+  border: 1px solid transparent;
+  border-radius: 8px;
+  background: transparent;
+  color: var(--text-h);
+  text-align: left;
+  cursor: pointer;
+}
+
+.navigation nav button:hover {
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+  color: var(--accent);
 }
 
 .logo {
@@ -51,6 +95,53 @@
   object-fit: cover;
 }
 
+.group-selector select {
+  padding: 6px 10px;
+  border-radius: 8px;
+  border: 1px solid var(--border);
+  background: var(--bg);
+  color: var(--text-h);
+  cursor: pointer;
+}
+
+.invite-code p {
+  display: inline-block;
+  background: var(--accent-bg);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+  border-radius: 8px;
+  padding: 4px 10px;
+  font-weight: 500;
+  letter-spacing: 0.5px;
+}
+
+.stats {
+  display: flex;
+  gap: 16px;
+  margin: 16px 0 28px;
+}
+
+.stat {
+  background: var(--card-bg);
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  box-shadow: var(--shadow);
+  padding: 14px 24px;
+  text-align: center;
+}
+
+.stat-value {
+  display: block;
+  font-size: 28px;
+  font-weight: 600;
+  color: var(--accent);
+}
+
+.stat-label {
+  font-size: 13px;
+  color: var(--text);
+}
+
 .board {
   display: flex;
   gap: 16px;
@@ -59,9 +150,12 @@
 
 .card {
   flex: 1;
-  padding: 16px;
-  border: 1px solid #d9d9d9;
-  background: #ffffff;
+  padding: 18px;
+  border: 1px solid var(--border);
+  border-radius: 12px;
+  background: var(--card-bg);
+  box-shadow: var(--shadow);
+  color: var(--text);
   text-align: left;
 }
 
@@ -75,8 +169,396 @@
   list-style: none;
 }
 
+.theme-toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.theme-toggle button {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  color: var(--text-h);
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.theme-toggle button:hover {
+  border-color: var(--accent-border);
+}
+
+.theme-toggle button.active {
+  background: var(--accent);
+  color: white;
+  border-color: var(--accent);
+}
+
+/* Claim Board */
+.add-chore-form {
+  margin-bottom: 24px;
+}
+
+.add-chore-form .form-row {
+  display: flex;
+  gap: 16px;
+  margin: 12px 0;
+  flex-wrap: wrap;
+}
+
+.add-chore-form label {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  font-size: 14px;
+  flex: 1;
+  min-width: 180px;
+}
+
+.add-chore-form input,
+.add-chore-form select {
+  padding: 8px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-h);
+  font-size: 15px;
+}
+
+.add-chore-form button {
+  padding: 8px 16px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+}
+
+.add-chore-form button:hover {
+  filter: brightness(0.92);
+}
+
+.checkbox-label {
+  flex-direction: row !important;
+  align-items: center;
+  gap: 8px !important;
+}
+
+.checkbox-label input {
+  width: auto;
+}
+
+.form-buttons {
+  display: flex;
+  gap: 12px;
+  margin-top: 8px;
+}
+
+.form-buttons .cancel-button {
+  background: transparent;
+  border: 1px solid var(--border);
+  color: var(--text-h);
+}
+
+.form-buttons .cancel-button:hover {
+  background: var(--code-bg);
+}
+
+.claim-board {
+  display: flex;
+  gap: 24px;
+}
+
+.claim-column {
+  flex: 1;
+}
+
+.claim-list {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+  margin-top: 12px;
+}
+
+.claim-card {
+  flex: none;
+}
+
+.claim-card.claimed {
+  opacity: 0.7;
+}
+
+.claim-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.claim-task {
+  font-weight: 500;
+}
+
+.points-badge {
+  background: var(--accent-bg);
+  color: var(--accent);
+  border: 1px solid var(--accent-border);
+  border-radius: 999px;
+  padding: 2px 10px;
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.claim-card button {
+  margin-top: 8px;
+  padding: 6px 12px;
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  background: transparent;
+  color: var(--accent);
+  cursor: pointer;
+}
+
+.claim-card button:hover {
+  background: var(--accent);
+  color: white;
+}
+
+.unclaim-button {
+  border-color: #d9534f !important;
+  color: #d9534f !important;
+}
+
+.unclaim-button:hover {
+  background: #d9534f !important;
+  color: white !important;
+}
+
+.empty-state {
+  color: var(--text);
+  font-size: 14px;
+  opacity: 0.7;
+  margin-top: 8px;
+}
+
+/* Calendar */
+.calendar-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 16px;
+}
+
+.calendar-header button {
+  padding: 6px 14px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--card-bg);
+  color: var(--text-h);
+  cursor: pointer;
+}
+
+.calendar-header button:hover {
+  background: var(--accent-bg);
+  border-color: var(--accent-border);
+  color: var(--accent);
+}
+
+.calendar-month-label {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.today-button {
+  font-size: 13px;
+  padding: 4px 10px !important;
+}
+
+.calendar-grid {
+  display: grid;
+  grid-template-columns: repeat(7, 1fr);
+  gap: 8px;
+}
+
+.calendar-day-names {
+  margin-bottom: 8px;
+}
+
+.calendar-day-name {
+  text-align: center;
+  font-weight: 500;
+  font-size: 13px;
+  color: var(--text);
+  opacity: 0.7;
+}
+
+.calendar-cell {
+  min-height: 90px;
+  border: 1px solid var(--border);
+  background: var(--card-bg);
+  border-radius: 10px;
+  padding: 6px;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 4px;
+  width: 100%;
+  font: inherit;
+  color: inherit;
+  text-align: left;
+  cursor: pointer;
+}
+
+.calendar-cell:hover:not(:disabled) {
+  border-color: var(--accent-border);
+}
+
+.calendar-cell:disabled {
+  cursor: default;
+}
+
+.calendar-cell.selected {
+  outline: 2px dashed var(--accent);
+  outline-offset: 2px;
+}
+
+.calendar-cell.empty {
+  background: transparent;
+  border: none;
+}
+
+.calendar-cell.today {
+  border: 2px solid var(--accent);
+}
+
+.calendar-cell.has-claimed {
+  background: var(--accent-bg);
+  border-color: var(--accent);
+}
+
+.calendar-cell.has-claimed.today {
+  border: 2px solid var(--accent);
+  box-shadow: 0 0 0 2px var(--accent-border);
+}
+
+.calendar-day-number {
+  font-weight: 500;
+  font-size: 14px;
+  color: var(--text-h);
+}
+
+.calendar-chores {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.calendar-chore-tag {
+  font-size: 11px;
+  background: var(--accent-bg);
+  color: var(--accent);
+  border-radius: 4px;
+  padding: 2px 4px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  cursor: pointer;
+}
+
+.calendar-chore-tag:hover {
+  text-decoration: line-through;
+}
+
+.calendar-chore-tag.claimed {
+  background: var(--accent);
+  color: white;
+  font-weight: 500;
+}
+
+.danger-button {
+  background: #d9534f !important;
+  color: white !important;
+  border: none !important;
+}
+
+.danger-button:hover {
+  background: #c9302c !important;
+}
+
+.loose-task-list {
+  border-top: 1px dashed var(--border);
+  padding-top: 12px;
+}
+
+.loose-chore-item {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 8px;
+}
+
+.loose-task-list .owner-label {
+  margin-top: 8px;
+  font-style: italic;
+  opacity: 0.7;
+}
+
+.loose-chores-section {
+  margin-top: 32px;
+  text-align: left;
+}
+
+.loose-chores-list {
+  flex-direction: row;
+  flex-wrap: wrap;
+}
+
+.loose-chores-list .claim-card {
+  flex: 0 1 260px;
+}
+
+.schedule-form {
+  display: flex;
+  gap: 8px;
+  margin-top: 8px;
+}
+
+.schedule-form input {
+  flex: 1;
+  padding: 6px;
+  border: 1px solid var(--border);
+  border-radius: 8px;
+  background: var(--bg);
+  color: var(--text-h);
+  font-size: 14px;
+}
+
+.schedule-form button {
+  padding: 6px 12px;
+  border: none;
+  border-radius: 8px;
+  background: var(--accent);
+  color: white;
+  cursor: pointer;
+  white-space: nowrap;
+}
+
+.schedule-form button:hover {
+  filter: brightness(0.92);
+}
+
 @media (max-width: 900px) {
   .board {
     flex-direction: column;
+  }
+
+  .claim-board {
+    flex-direction: column;
+  }
+
+  .calendar-cell {
+    min-height: 60px;
   }
 }
