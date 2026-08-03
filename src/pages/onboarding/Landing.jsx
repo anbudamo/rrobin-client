@@ -15,6 +15,8 @@ const groupActions = {
   create: 'create',
 }
 
+const apiUrl = import.meta.env.VITE_API_URL || 'http://localhost:3000'
+
 export default function Landing({ onUserJoin, onUserCreate }) {
   // Ref to the react modal
   const authDialogRef = useRef(null)
@@ -24,6 +26,7 @@ export default function Landing({ onUserJoin, onUserCreate }) {
 
   // Remembers whether the user chose Join or Create
   const [selectedGroupAction, setSelectedGroupAction] = useState(null)
+  const [authError, setAuthError] = useState('')
 
   // Validates sign-up fields and stores field-specific sign-up errors
   const {
@@ -45,6 +48,7 @@ export default function Landing({ onUserJoin, onUserCreate }) {
     event.preventDefault()
     setSelectedGroupAction(groupAction)
     setModalView(modes.signUp)
+    setAuthError('')
     authDialogRef.current.showModal()
   }
 
@@ -67,15 +71,42 @@ export default function Landing({ onUserJoin, onUserCreate }) {
     }
   }
 
-  const handleAuthenticationSubmit = () => {
-    handleGroupAction()
+  const handleAuthenticationSubmit = async (credentials, endpoint) => {
+    setAuthError('')
+
+    try {
+      // TODO- setup auth in backend
+      // const response = await fetch(`${apiUrl}/api/auth/${endpoint}`, {
+      //   method: 'POST',
+      //   headers: { 'Content-Type': 'application/json' },
+      //   body: JSON.stringify(credentials),
+      // })
+      // const result = await response.json()
+
+      // if (!response.ok) {
+      //   setAuthError(result.error || 'Unable to authenticate. Please try again.')
+      //   return
+      // }
+
+      // // This is suitable for the development milestone. Prefer secure httpOnly
+      // // cookies with refresh tokens before a production deployment.
+      // localStorage.setItem('roundrobin-access-token', result.accessToken)
+      // localStorage.setItem('roundrobin-user', JSON.stringify(result.user))
+      handleGroupAction()
+    } catch {
+      setAuthError('Unable to reach the server. Please try again.')
+    }
   }
 
   /* Form html and validation */
   const signupForm = (
     <form
       className='add-chore-form'
-      onSubmit={(event) => handleSignupSubmit(handleAuthenticationSubmit)(event)}
+      onSubmit={handleSignupSubmit((values) => handleAuthenticationSubmit({
+        username: values.username,
+        email: values.email,
+        password: values.password,
+      }, 'signup'))}
     >
       <h2>Create an account</h2>
       <label>
@@ -124,6 +155,7 @@ export default function Landing({ onUserJoin, onUserCreate }) {
         {signupErrors.confirmPassword && <p className='form-error'>{signupErrors.confirmPassword.message}</p>}
       </label>
       <button type='submit'>Create account</button>
+      {authError && <p className='form-error' role='alert'>{authError}</p>}
       <p>
         Already have an account?{' '}
         <button type='button' onClick={() => setModalView(modes.signIn)}>Sign in</button>
@@ -134,7 +166,10 @@ export default function Landing({ onUserJoin, onUserCreate }) {
   const loginForm = (
     <form
       className='add-chore-form'
-      onSubmit={(event) => handleLoginSubmit(handleAuthenticationSubmit)(event)}
+      onSubmit={handleLoginSubmit((values) => handleAuthenticationSubmit({
+        login: values.login,
+        password: values.loginPassword,
+      }, 'signin'))}
     >
       <h2>Sign in</h2>
       <label>
@@ -156,6 +191,7 @@ export default function Landing({ onUserJoin, onUserCreate }) {
         {loginErrors.loginPassword && <p className='form-error'>{loginErrors.loginPassword.message}</p>}
       </label>
       <button type='submit'>Sign in</button>
+      {authError && <p className='form-error' role='alert'>{authError}</p>}
       <p>
         Need an account?{' '}
         <button type='button' onClick={() => setModalView(modes.signUp)}>Create account</button>
