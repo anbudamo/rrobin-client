@@ -1,5 +1,6 @@
-import robinImage from '../assets/robin.webp'
+import robinImage from '../../assets/robin.webp'
 import { useRef, useState } from 'react'
+import { useForm } from 'react-hook-form'
 
 // Possible forms shown in the modal.
 const modes = {
@@ -14,7 +15,7 @@ const groupActions = {
   create: 'create',
 }
 
-export default function LandingPage({ onUserJoin, onUserCreate }) {
+export default function Landing({ onUserJoin, onUserCreate }) {
   // Ref to the react modal
   const authDialogRef = useRef(null)
 
@@ -23,6 +24,21 @@ export default function LandingPage({ onUserJoin, onUserCreate }) {
 
   // Remembers whether the user chose Join or Create
   const [selectedGroupAction, setSelectedGroupAction] = useState(null)
+
+  // Validates sign-up fields and stores field-specific sign-up errors
+  const {
+    register: registerSignup,
+    handleSubmit: handleSignupSubmit,
+    getValues: getSignupValues,
+    formState: { errors: signupErrors },
+  } = useForm()
+
+  // Validates sign-in fields and stores field-specific sign-in errors
+  const {
+    register: registerLogin,
+    handleSubmit: handleLoginSubmit,
+    formState: { errors: loginErrors },
+  } = useForm()
 
   // Saves the selected path (join or create), then opens the auth modal
   const handleOpenAuthModal = (event, groupAction) => {
@@ -51,14 +67,63 @@ export default function LandingPage({ onUserJoin, onUserCreate }) {
     }
   }
 
+  const handleAuthenticationSubmit = () => {
+    handleGroupAction()
+  }
+
+  /* Form html and validation */
   const signupForm = (
-    <form className='add-chore-form'>
+    <form
+      className='add-chore-form'
+      onSubmit={(event) => handleSignupSubmit(handleAuthenticationSubmit)(event)}
+    >
       <h2>Create an account</h2>
-      <label>Username<input type='text' name='username' /></label>
-      <label>Email address<input type='email' name='email' /></label>
-      <label>Password<input type='password' name='password' /></label>
-      <label>Confirm password<input type='password' name='confirmPassword' /></label>
-      <button type='button' onClick={() => handleGroupAction()}>Create account</button>
+      <label>
+        Username
+        <input
+          type='text'
+          {...registerSignup('username', { required: 'Username is required' })}
+          aria-invalid={Boolean(signupErrors.username)}
+        />
+        {signupErrors.username && <p className='form-error'>{signupErrors.username.message}</p>}
+      </label>
+      <label>
+        Email address
+        <input
+          type='email'
+          {...registerSignup('email', {
+            required: 'Email is required',
+            pattern: { value: /^\S+@\S+\.\S+$/, message: 'Enter a valid email address' },
+          })}
+          aria-invalid={Boolean(signupErrors.email)}
+        />
+        {signupErrors.email && <p className='form-error'>{signupErrors.email.message}</p>}
+      </label>
+      <label>
+        Password
+        <input
+          type='password'
+          {...registerSignup('password', {
+            required: 'Password is required',
+            minLength: { value: 8, message: 'Password must be at least 8 characters' },
+          })}
+          aria-invalid={Boolean(signupErrors.password)}
+        />
+        {signupErrors.password && <p className='form-error'>{signupErrors.password.message}</p>}
+      </label>
+      <label>
+        Confirm password
+        <input
+          type='password'
+          {...registerSignup('confirmPassword', {
+            required: 'Please confirm your password',
+            validate: (value) => value === getSignupValues('password') || 'Passwords do not match',
+          })}
+          aria-invalid={Boolean(signupErrors.confirmPassword)}
+        />
+        {signupErrors.confirmPassword && <p className='form-error'>{signupErrors.confirmPassword.message}</p>}
+      </label>
+      <button type='submit'>Create account</button>
       <p>
         Already have an account?{' '}
         <button type='button' onClick={() => setModalView(modes.signIn)}>Sign in</button>
@@ -67,11 +132,30 @@ export default function LandingPage({ onUserJoin, onUserCreate }) {
   )
 
   const loginForm = (
-    <form className='add-chore-form'>
+    <form
+      className='add-chore-form'
+      onSubmit={(event) => handleLoginSubmit(handleAuthenticationSubmit)(event)}
+    >
       <h2>Sign in</h2>
-      <label>Username or email address<input type='text' name='login' /></label>
-      <label>Password<input type='password' name='loginPassword' /></label>
-      <button type='button' onClick={() => handleGroupAction()}>Sign in</button>
+      <label>
+        Username or email address
+        <input
+          type='text'
+          {...registerLogin('login', { required: 'Username or email is required' })}
+          aria-invalid={Boolean(loginErrors.login)}
+        />
+        {loginErrors.login && <p className='form-error'>{loginErrors.login.message}</p>}
+      </label>
+      <label>
+        Password
+        <input
+          type='password'
+          {...registerLogin('loginPassword', { required: 'Password is required' })}
+          aria-invalid={Boolean(loginErrors.loginPassword)}
+        />
+        {loginErrors.loginPassword && <p className='form-error'>{loginErrors.loginPassword.message}</p>}
+      </label>
+      <button type='submit'>Sign in</button>
       <p>
         Need an account?{' '}
         <button type='button' onClick={() => setModalView(modes.signUp)}>Create account</button>

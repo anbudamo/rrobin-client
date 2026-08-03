@@ -5,8 +5,8 @@ import Settings from './pages/Settings'
 import Trade from './pages/Trade'
 import ClaimBoard from './pages/ClaimBoard'
 import CalendarPage from './pages/CalendarPage'
-import LandingPage from './pages/LandingPage'
-import GroupCodePage from './pages/GroupCodePage'
+import Landing from './pages/onboarding/Landing'
+import Code from './pages/onboarding/GroupCode'
 import robinImage from './assets/robin.webp'
 
 const initialOpenChores = [
@@ -200,9 +200,9 @@ export default function App() {
       <div className={`app-layout ${darkMode ? 'dark' : ''}`}>
         <main className='page-content'>
           {activeNav === 'landing' ? (
-            <LandingPage onUserJoin={handleUserJoin} onUserCreate={handleUserCreate} />
+            <Landing onUserJoin={handleUserJoin} onUserCreate={handleUserCreate} />
           ) : (
-            <GroupCodePage group={group} onContinue={() => setActiveNav('dashboard')} />
+            <Code group={group} onContinue={() => setActiveNav('dashboard')} />
           )}
         </main>
       </div>

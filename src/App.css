@@ -227,6 +227,11 @@
   min-width: 180px;
 }
 
+.form-error {
+  color: #d9534f;
+  font-size: 13px;
+}
+
 .add-chore-form input,
 .add-chore-form select {
   padding: 8px;
