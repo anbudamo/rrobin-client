@@ -5,9 +5,9 @@ import Settings from './pages/Settings'
 import Trade from './pages/Trade'
 import ClaimBoard from './pages/ClaimBoard'
 import CalendarPage from './pages/CalendarPage'
+import LandingPage from './pages/LandingPage'
+import GroupCodePage from './pages/GroupCodePage'
 import robinImage from './assets/robin.webp'
-
-const inviteCode = '330 258'
 
 const initialOpenChores = [
   { id: 1, task: 'Take out recycling', points: 2, date: '', addedBy: 'Anbu Damodaran' },
@@ -34,7 +34,7 @@ function Header({ onProfileClick, onNotificationsClick }) {
   )
 }
 
-function Sidebar({ onNavClick }) {
+function Sidebar({ onNavClick, group }) {
   return (
     <div className='sidebar'>
       <div className='logo'>
@@ -45,7 +45,7 @@ function Sidebar({ onNavClick }) {
       <div className='group-selector'>
         <h4>Group Selector</h4>
         <select>
-          <option>Unit #309</option>
+          <option>{group.name}</option>
         </select>
       </div>
 
@@ -76,7 +76,7 @@ function Sidebar({ onNavClick }) {
 
       <div className='invite-code'>
         <h4>Invite Code</h4>
-        <p>{inviteCode}</p>
+        <p>{group.inviteCode}</p>
       </div>
 
     </div>
@@ -86,10 +86,20 @@ function Sidebar({ onNavClick }) {
 
 export default function App() {
   const currentUser = 'Anbu Damodaran'
+  const [group, setGroup] = useState({ name: 'Unit #309', inviteCode: '330 258' })
 
   // This state remembers which navigation button was clicked.
-  const [activeNav, setActiveNav] = useState('dashboard')
+  const [activeNav, setActiveNav] = useState('landing')
   const [showNotifications, setShowNotifications] = useState(false)
+
+  // If the user chooses to join a group from landing page, last step
+  const handleJoinApp = () => setActiveNav('dashboard')
+  // If the user chooses to create a group from landing page, last step
+  const handleCreateGroup = (name) => {
+    const inviteCode = `${Math.floor(100 + Math.random() * 900)} ${Math.floor(100 + Math.random() * 900)}`
+    setGroup({ name, inviteCode })
+    setActiveNav('groupCode')
+  }
 
   // Chore state lives here so both the Claim Board and Calendar can read/update it.
   const [openChores, setOpenChores] = useState(initialOpenChores)
@@ -118,7 +128,8 @@ export default function App() {
     const chore = claimedChores.find((c) => c.id === id)
     if (!chore) return
 
-    const { claimedBy, ...rest } = chore
+    const rest = { ...chore }
+    delete rest.claimedBy
     setClaimedChores((prev) => prev.filter((c) => c.id !== id))
     setOpenChores((prev) => [...prev, rest])
   }
@@ -185,12 +196,29 @@ export default function App() {
     localStorage.setItem('roundrobin-theme', darkMode ? 'dark' : 'light')
   }, [darkMode])
 
+  if (activeNav === 'landing' || activeNav === 'groupCode') {
+    return (
+      <div className={`app-layout ${darkMode ? 'dark' : ''}`}>
+        <main className='page-content'>
+          {activeNav === 'landing' ? (
+            <LandingPage onJoinApp={handleJoinApp} onCreateGroup={handleCreateGroup} />
+          ) : (
+            <GroupCodePage group={group} onContinue={() => setActiveNav('dashboard')} />
+          )}
+        </main>
+      </div>
+    )
+  }
+
   return (
     <div className={`app-layout ${darkMode ? 'dark' : ''}`}>
-      <Sidebar onNavClick={setActiveNav} />
+      <Sidebar onNavClick={setActiveNav} group={group} />
 
       <main className='page-content'>
-        <Header onNotificationsClick={() => setShowNotifications((prev) => !prev)} />
+        <Header
+          onProfileClick={() => setActiveNav('settings')}
+          onNotificationsClick={() => setShowNotifications((prev) => !prev)}
+        />
         {showNotifications && <p className='notification-message'>No new notifications.</p>}
         {activeNav === 'dashboard' && (
           <Dashboard name="Anbu" calendarChores={calendarChores} claimedChores={claimedChores} />
