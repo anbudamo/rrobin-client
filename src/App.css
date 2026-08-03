@@ -159,6 +159,18 @@
   text-align: left;
 }
 
+.modal-close {
+  position: absolute;
+  top: 8px;
+  right: 8px;
+  border: none;
+  background: transparent;
+  color: var(--text-h);
+  font-size: 24px;
+  line-height: 1;
+  cursor: pointer;
+}
+
 .task-list {
   margin-top: 16px;
 }
