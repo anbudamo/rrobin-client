@@ -1,6 +1,6 @@
-import robinImage from '../assets/robin.webp'
+import robinImage from '../../assets/robin.webp'
 
-export default function GroupCodePage({ group, onContinue }) {
+export default function Code({ group, onContinue }) {
   return (
     <>
       <header className='logo'>

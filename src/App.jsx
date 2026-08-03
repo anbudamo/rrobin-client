@@ -5,8 +5,8 @@ import Settings from './pages/Settings'
 import Trade from './pages/Trade'
 import ClaimBoard from './pages/ClaimBoard'
 import CalendarPage from './pages/CalendarPage'
-import LandingPage from './pages/LandingPage'
-import GroupCodePage from './pages/GroupCodePage'
+import Landing from './pages/onboarding/Landing'
+import Code from './pages/onboarding/GroupCode'
 import robinImage from './assets/robin.webp'
 
 const initialOpenChores = [
@@ -92,10 +92,9 @@ export default function App() {
   const [activeNav, setActiveNav] = useState('landing')
   const [showNotifications, setShowNotifications] = useState(false)
 
-  // If the user chooses to join a group from landing page, last step
-  const handleJoinApp = () => setActiveNav('dashboard')
-  // If the user chooses to create a group from landing page, last step
-  const handleCreateGroup = (name) => {
+  const handleUserJoin = () => setActiveNav('dashboard')
+
+  const handleUserCreate = (name) => {
     const inviteCode = `${Math.floor(100 + Math.random() * 900)} ${Math.floor(100 + Math.random() * 900)}`
     setGroup({ name, inviteCode })
     setActiveNav('groupCode')
@@ -201,9 +200,9 @@ export default function App() {
       <div className={`app-layout ${darkMode ? 'dark' : ''}`}>
         <main className='page-content'>
           {activeNav === 'landing' ? (
-            <LandingPage onJoinApp={handleJoinApp} onCreateGroup={handleCreateGroup} />
+            <Landing onUserJoin={handleUserJoin} onUserCreate={handleUserCreate} />
           ) : (
-            <GroupCodePage group={group} onContinue={() => setActiveNav('dashboard')} />
+            <Code group={group} onContinue={() => setActiveNav('dashboard')} />
           )}
         </main>
       </div>
