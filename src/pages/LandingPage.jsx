@@ -1,38 +1,54 @@
 import robinImage from '../assets/robin.webp'
 import { useRef, useState } from 'react'
 
-export default function LandingPage({ onJoinApp, onCreateGroup }) {
-  // Reference to the modal component
-  const authDialogRef = useRef(null)
-  // Dictates which form is shown on the modal- signup/login/groupname
-  const [authMode, setAuthMode] = useState('signup')
-  // Tracks whether user wants to join or create a group
-  const [entryAction, setEntryAction] = useState(null)
+// Possible forms shown in the modal.
+const modes = {
+  signUp: 'signup',
+  signIn: 'signin',
+  groupName: 'groupName',
+}
 
-  const handleOpenAuthModal = (event, action) => {
+// The two paths a user can choose on the landing page.
+const groupActions = {
+  join: 'join',
+  create: 'create',
+}
+
+export default function LandingPage({ onUserJoin, onUserCreate }) {
+  // Ref to the react modal
+  const authDialogRef = useRef(null)
+
+  // Tracks the current form in the modal
+  const [modalView, setModalView] = useState(modes.signUp)
+
+  // Remembers whether the user chose Join or Create
+  const [selectedGroupAction, setSelectedGroupAction] = useState(null)
+
+  // Saves the selected path (join or create), then opens the auth modal
+  const handleOpenAuthModal = (event, groupAction) => {
     event.preventDefault()
-    setEntryAction(action)
-    setAuthMode('signup')
+    setSelectedGroupAction(groupAction)
+    setModalView(modes.signUp)
     authDialogRef.current.showModal()
   }
 
-  const handleAuthenticationComplete = () => {
-    if (entryAction === 'create') { 
-      setAuthMode('groupName')
+  // Continues through either the Join or Create path
+  const handleGroupAction = (groupName) => {
+    if (selectedGroupAction === groupActions.join) {
+      authDialogRef.current.close()
+      onUserJoin()
       return
     }
 
-    authDialogRef.current.close()
-    onJoinApp()
-  }
+    if (selectedGroupAction === groupActions.create) {
+      if (!groupName) {
+        setModalView(modes.groupName)
+        return
+      }
 
-  const handleCreateGroup = (event) => {
-    event.preventDefault()
-    const groupName = event.currentTarget.groupName.value.trim()
-    if (!groupName) return
-
-    authDialogRef.current.close()
-    onCreateGroup(groupName)
+      authDialogRef.current.close()
+      onUserCreate(groupName)
+    }
   }
 
   const signupForm = (
@@ -42,10 +58,10 @@ export default function LandingPage({ onJoinApp, onCreateGroup }) {
       <label>Email address<input type='email' name='email' /></label>
       <label>Password<input type='password' name='password' /></label>
       <label>Confirm password<input type='password' name='confirmPassword' /></label>
-      <button type='button' onClick={handleAuthenticationComplete}>Create account</button>
+      <button type='button' onClick={() => handleGroupAction()}>Create account</button>
       <p>
         Already have an account?{' '}
-        <button type='button' onClick={() => setAuthMode('signin')}>Sign in</button>
+        <button type='button' onClick={() => setModalView(modes.signIn)}>Sign in</button>
       </p>
     </form>
   )
@@ -55,16 +71,22 @@ export default function LandingPage({ onJoinApp, onCreateGroup }) {
       <h2>Sign in</h2>
       <label>Username or email address<input type='text' name='login' /></label>
       <label>Password<input type='password' name='loginPassword' /></label>
-      <button type='button' onClick={handleAuthenticationComplete}>Sign in</button>
+      <button type='button' onClick={() => handleGroupAction()}>Sign in</button>
       <p>
         Need an account?{' '}
-        <button type='button' onClick={() => setAuthMode('signup')}>Create account</button>
+        <button type='button' onClick={() => setModalView(modes.signUp)}>Create account</button>
       </p>
     </form>
   )
 
   const groupNameForm = (
-    <form className='add-chore-form' onSubmit={handleCreateGroup}>
+    <form
+      className='add-chore-form'
+      onSubmit={(event) => {
+        event.preventDefault()
+        handleGroupAction(event.currentTarget.groupName.value.trim())
+      }}
+    >
       <h2>Name your group</h2>
       <label>
         Group name
@@ -96,12 +118,12 @@ export default function LandingPage({ onJoinApp, onCreateGroup }) {
         </section>
 
         <section className='claim-column'>
-          <form className='add-chore-form card' onSubmit={(event) => handleOpenAuthModal(event, 'join')}>
+          <form className='add-chore-form card' onSubmit={(event) => handleOpenAuthModal(event, groupActions.join)}>
             <h2>Join with an invite code</h2>
             <label>Invite code<input type='text' name='inviteCode' placeholder='e.g. 330 258' /></label>
             <button type='submit'>Join</button>
           </form>
-          <form className='add-chore-form card' onSubmit={(event) => handleOpenAuthModal(event, 'create')}>
+          <form className='add-chore-form card' onSubmit={(event) => handleOpenAuthModal(event, groupActions.create)}>
             <h2>Create a new group</h2>
             <button type='submit'>Create</button>
           </form>
@@ -110,9 +132,9 @@ export default function LandingPage({ onJoinApp, onCreateGroup }) {
 
       <dialog ref={authDialogRef} className='card'>
         <button className='modal-close' type='button' aria-label='Close authentication modal' onClick={() => authDialogRef.current.close()}>×</button>
-        {authMode === 'signup' && signupForm}
-        {authMode === 'signin' && loginForm}
-        {authMode === 'groupName' && groupNameForm}
+        {modalView === modes.signUp && signupForm}
+        {modalView === modes.signIn && loginForm}
+        {modalView === modes.groupName && groupNameForm}
       </dialog>
     </>
   )
