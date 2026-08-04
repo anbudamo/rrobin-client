@@ -99,12 +99,16 @@ function AddCalendarChoreForm({ date, onAdd, onCancel }) {
   )
 }
 
-function RemoveChorePanel({ target, onRemoveOccurrence, onRemoveChore, onCancel }) {
+function RemoveChorePanel({ target, onMarkDone, onRemoveOccurrence, onRemoveChore, onCancel }) {
   return (
     <div className='add-chore-form card'>
-      <h3>Remove "{target.task}"?</h3>
+      <h3>"{target.task}"</h3>
 
       <div className='form-buttons'>
+        <button type='button' className='done-button' onClick={onMarkDone}>
+          Mark as done
+        </button>
+
         {target.recurring && (
           <button type='button' onClick={onRemoveOccurrence}>
             Remove this date only
@@ -174,6 +178,7 @@ export default function CalendarPage({
   onAddCalendarChore,
   onRemoveOccurrence,
   onRemoveChore,
+  onMarkDone,
   onScheduleChore,
 }) {
   const today = new Date()
@@ -220,6 +225,12 @@ export default function CalendarPage({
     setRemovalTarget({ ...chore, dateKey })
   }
 
+  const handleConfirmMarkDone = () => {
+    if (!removalTarget) return
+    onMarkDone(removalTarget.id, removalTarget.source, removalTarget.dateKey)
+    setRemovalTarget(null)
+  }
+
   const handleConfirmRemoveOccurrence = () => {
     if (!removalTarget) return
     onRemoveOccurrence(removalTarget.id, removalTarget.source, removalTarget.dateKey)
@@ -237,7 +248,7 @@ export default function CalendarPage({
     ...calendarChores.map((c) => ({ ...c, source: 'calendar' })),
   ]
 
-  const looseChores = claimedChores.filter((chore) => !chore.date)
+  const looseChores = claimedChores.filter((chore) => !chore.date && !chore.completedAt)
 
   const cells = []
   for (let i = 0; i < firstDayOfMonth; i++) {
@@ -251,7 +262,7 @@ export default function CalendarPage({
     <>
       <h2 className='page-title'>Calendar</h2>
       <p className='page-subtitle'>
-        Click any date to add a chore to it, or click a chore to remove it.
+        Click any date to add a chore to it, or click a chore to mark it done or remove it.
       </p>
 
       <div className='calendar-header'>
@@ -335,6 +346,7 @@ export default function CalendarPage({
       {removalTarget && (
         <RemoveChorePanel
           target={removalTarget}
+          onMarkDone={handleConfirmMarkDone}
           onRemoveOccurrence={handleConfirmRemoveOccurrence}
           onRemoveChore={handleConfirmRemoveChore}
           onCancel={() => setRemovalTarget(null)}

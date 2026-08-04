@@ -1,5 +1,6 @@
 import { useState, useEffect } from 'react'
 import './App.css'
+import { collectFinished, purgeExpired } from './utils/chores'
 import Dashboard from './pages/Dashboard'
 import Settings from './pages/Settings'
 import Trade from './pages/Trade'
@@ -7,7 +8,7 @@ import ClaimBoard from './pages/ClaimBoard'
 import CalendarPage from './pages/CalendarPage'
 import Landing from './pages/onboarding/Landing'
 import Code from './pages/onboarding/GroupCode'
-import robinImage from './assets/robin.webp'
+import robinImage from './assets/robin.jpg'
 
 const initialOpenChores = [
   { id: 1, task: 'Take out recycling', points: 2, date: '', addedBy: 'Anbu Damodaran' },
@@ -176,12 +177,66 @@ export default function App() {
     }
   }
 
+  // Marks a chore finished. For a recurring chore we only complete the clicked
+  // occurrence (stamped by date); for a one-off we complete the whole chore.
+  // Finished chores drop off the calendar and surface in the Dashboard's
+  // Finished list until their 48 hours are up.
+  const handleMarkDone = (id, source, dateKey) => {
+    const now = Date.now()
+    const updater = (prev) =>
+      prev.map((c) => {
+        if (c.id !== id) return c
+        if (c.recurring) {
+          return { ...c, completedDates: { ...(c.completedDates || {}), [dateKey]: now } }
+        }
+        return { ...c, completedAt: now }
+      })
+
+    if (source === 'calendar') {
+      setCalendarChores(updater)
+    } else {
+      setClaimedChores(updater)
+    }
+  }
+
+  // Clears the saved session and returns to the landing page.
+  const handleLogout = () => {
+    localStorage.removeItem('roundrobin-access-token')
+    localStorage.removeItem('roundrobin-user')
+    setActiveNav('landing')
+  }
+
   // Assigns a date to a claimed chore that doesn't have one yet ("loose" chore).
   const handleScheduleChore = (id, date) => {
     setClaimedChores((prev) =>
       prev.map((c) => (c.id === id ? { ...c, date } : c))
     )
   }
+
+  // Every minute (and on load) sweep out finished chores whose 48 hours have
+  // passed. purgeExpired returns the same array when nothing changed, so this
+  // won't cause needless re-renders.
+  useEffect(() => {
+    const sweep = () => {
+      setCalendarChores((prev) => purgeExpired(prev))
+      setClaimedChores((prev) => purgeExpired(prev))
+    }
+    sweep()
+    const timer = setInterval(sweep, 60 * 1000)
+    return () => clearInterval(timer)
+  }, [])
+
+  // The current user's still-active chores, for the Swap board's "My Offers".
+  const myChores = [
+    ...calendarChores.filter((c) => c.addedBy === currentUser && !c.completedAt),
+    ...claimedChores.filter((c) => c.claimedBy === currentUser && !c.completedAt),
+  ]
+
+  // Everything finished across the app, newest first, for the Dashboard.
+  const finishedChores = collectFinished([
+    ...calendarChores.map((c) => ({ ...c, source: 'calendar' })),
+    ...claimedChores.map((c) => ({ ...c, source: 'claimed' })),
+  ])
 
   // Dark mode state, initialized from localStorage so the choice persists across reloads.
   const [darkMode, setDarkMode] = useState(() => {
@@ -220,9 +275,15 @@ export default function App() {
         />
         {showNotifications && <p className='notification-message'>No new notifications.</p>}
         {activeNav === 'dashboard' && (
-          <Dashboard name="Anbu" calendarChores={calendarChores} claimedChores={claimedChores} />
+          <Dashboard
+            name="Anbu"
+            calendarChores={calendarChores}
+            claimedChores={claimedChores}
+            finishedChores={finishedChores}
+            onMarkDone={handleMarkDone}
+          />
         )}
-        {activeNav === 'swap' && <Trade />}
+        {activeNav === 'swap' && <Trade myChores={myChores} />}
         {activeNav === 'claimboard' && (
           <ClaimBoard
             openChores={openChores}
@@ -239,11 +300,12 @@ export default function App() {
             onAddCalendarChore={handleAddCalendarChore}
             onRemoveOccurrence={handleRemoveOccurrence}
             onRemoveChore={handleRemoveChore}
+            onMarkDone={handleMarkDone}
             onScheduleChore={handleScheduleChore}
           />
         )}
         {activeNav === 'settings' && (
-          <Settings darkMode={darkMode} onToggleTheme={() => setDarkMode((prev) => !prev)} />
+          <Settings darkMode={darkMode} onToggleTheme={() => setDarkMode((prev) => !prev)} onLogout={handleLogout} />
         )}
       </main>
     </div>

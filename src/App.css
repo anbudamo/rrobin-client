@@ -255,6 +255,14 @@
   filter: brightness(0.92);
 }
 
+/* Gives the Join / Create account / Sign in submit buttons breathing room
+   above them so they don't touch the field or heading directly above.
+   The ">" (direct child) keeps this off the Calendar's grouped
+   Add/Cancel buttons, which live inside .form-buttons. */
+.add-chore-form > button[type='submit'] {
+  margin-top: 12px;
+}
+
 .checkbox-label {
   flex-direction: row !important;
   align-items: center;
@@ -578,4 +586,166 @@
   .calendar-cell {
     min-height: 60px;
   }
+}
+
+/* ===== Mark as done (Calendar panel) ===== */
+.done-button {
+  background: #2e9e5b !important;
+  color: white !important;
+  border: none !important;
+}
+
+.done-button:hover {
+  background: #27824c !important;
+}
+
+/* ===== Finished section (Dashboard) ===== */
+.finished-section {
+  margin-top: 32px;
+  text-align: left;
+}
+
+.finished-list {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-top: 12px;
+}
+
+.finished-item {
+  flex: none;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  padding: 12px 16px;
+}
+
+.finished-main {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  flex-wrap: wrap;
+}
+
+.finished-check {
+  color: #2e9e5b;
+  font-weight: 700;
+}
+
+.finished-task {
+  font-weight: 500;
+  color: var(--text-h);
+  text-decoration: line-through;
+  opacity: 0.85;
+}
+
+.finished-meta {
+  font-size: 13px;
+  color: var(--text);
+  opacity: 0.7;
+  white-space: nowrap;
+}
+
+/* ===== Dashboard task rows ===== */
+.dash-task {
+  list-style: none;
+}
+
+.dash-task label {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background 0.12s ease;
+}
+
+.dash-task label:hover {
+  background: var(--accent-bg);
+}
+
+/* Custom checkbox — replaces the plain browser default */
+.dash-check {
+  appearance: none;
+  -webkit-appearance: none;
+  width: 19px;
+  height: 19px;
+  margin: 0;
+  flex-shrink: 0;
+  border: 2px solid var(--border);
+  border-radius: 6px;
+  background: var(--bg);
+  cursor: pointer;
+  position: relative;
+  transition: border-color 0.15s ease, background 0.15s ease;
+}
+
+.dash-check:hover {
+  border-color: var(--accent);
+}
+
+.dash-check:checked {
+  background: var(--accent);
+  border-color: var(--accent);
+}
+
+.dash-check:checked::after {
+  content: '';
+  position: absolute;
+  left: 5px;
+  top: 1px;
+  width: 4px;
+  height: 9px;
+  border: solid white;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+
+.dash-check:focus-visible {
+  outline: 2px solid var(--accent-border);
+  outline-offset: 2px;
+}
+
+/* Housemates' chores — read-only, no checkbox, just a small marker */
+.dash-task-readonly {
+  list-style: none;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding: 7px 8px 7px 10px;
+  color: var(--text-h);
+}
+
+.dash-task-readonly::before {
+  content: '';
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  background: var(--accent-border);
+  flex-shrink: 0;
+}
+
+.logout-button {
+  background-color: #a855f7;
+  color: #ffffff;
+  border: none;
+  border-radius: 8px;
+  padding: 10px 24px;
+  font-size: 1rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: background-color 0.2s ease, transform 0.1s ease;
+  display: block;
+  margin: 24px auto 0 auto;
+}
+
+
+.logout-button:hover {
+  background-color: #ef4444;
+}
+
+.logout-button:active {
+  transform: scale(0.98);
 }

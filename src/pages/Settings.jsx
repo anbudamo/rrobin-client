@@ -1,6 +1,6 @@
 import { useState } from 'react'
 
-export default function Settings({ darkMode, onToggleTheme }) {
+export default function Settings({ darkMode, onToggleTheme, onLogout }) {
   const [notifications, setNotifications] = useState(true)
 
   return (
@@ -52,7 +52,9 @@ export default function Settings({ darkMode, onToggleTheme }) {
         </label>
       </div>
 
-      <button type='button' className='logout-button'>Log out</button>
+      <button type='button' className='logout-button' onClick={onLogout}>
+        Log out
+      </button>
     </>
   )
 }

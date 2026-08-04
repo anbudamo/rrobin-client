@@ -1,6 +1,7 @@
-import robinImage from '../../assets/robin.webp'
+import robinImage from '../../assets/robin.jpg'
 import { useRef, useState } from 'react'
 import { useForm } from 'react-hook-form'
+import './Landing.css'
 
 // Possible forms shown in the modal.
 const modes = {
@@ -75,23 +76,22 @@ export default function Landing({ onUserJoin, onUserCreate }) {
     setAuthError('')
 
     try {
-      // TODO- setup auth in backend
-      // const response = await fetch(`${apiUrl}/api/auth/${endpoint}`, {
-      //   method: 'POST',
-      //   headers: { 'Content-Type': 'application/json' },
-      //   body: JSON.stringify(credentials),
-      // })
-      // const result = await response.json()
+      const response = await fetch(`${apiUrl}/api/auth/${endpoint}`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(credentials),
+      })
+      const result = await response.json()
 
-      // if (!response.ok) {
-      //   setAuthError(result.error || 'Unable to authenticate. Please try again.')
-      //   return
-      // }
+      if (!response.ok) {
+        setAuthError(result.error || 'Unable to authenticate. Please try again.')
+        return
+      }
 
-      // // This is suitable for the development milestone. Prefer secure httpOnly
-      // // cookies with refresh tokens before a production deployment.
-      // localStorage.setItem('roundrobin-access-token', result.accessToken)
-      // localStorage.setItem('roundrobin-user', JSON.stringify(result.user))
+      // This is suitable for the development milestone. Prefer secure httpOnly
+      // cookies with refresh tokens before a production deployment.
+      localStorage.setItem('roundrobin-access-token', result.accessToken)
+      localStorage.setItem('roundrobin-user', JSON.stringify(result.user))
       handleGroupAction()
     } catch {
       setAuthError('Unable to reach the server. Please try again.')
@@ -156,7 +156,7 @@ export default function Landing({ onUserJoin, onUserCreate }) {
       </label>
       <button type='submit'>Create account</button>
       {authError && <p className='form-error' role='alert'>{authError}</p>}
-      <p>
+      <p className='modal-switch'>
         Already have an account?{' '}
         <button type='button' onClick={() => setModalView(modes.signIn)}>Sign in</button>
       </p>
@@ -192,7 +192,7 @@ export default function Landing({ onUserJoin, onUserCreate }) {
       </label>
       <button type='submit'>Sign in</button>
       {authError && <p className='form-error' role='alert'>{authError}</p>}
-      <p>
+      <p className='modal-switch'>
         Need an account?{' '}
         <button type='button' onClick={() => setModalView(modes.signUp)}>Create account</button>
       </p>
@@ -217,45 +217,58 @@ export default function Landing({ onUserJoin, onUserCreate }) {
   )
 
   return (
-    <>
-      <h1>Round Robin</h1>
-      <p className='page-subtitle'>Chores made fair</p>
+    <div className='landing'>
+      <header className='landing-hero'>
+        <img className='landing-logo' src={robinImage} alt='Round Robin bird logo' />
+        <h1 className='landing-title'>Round Robin</h1>
+        <p className='landing-tagline'>Chores made fair</p>
+        <p className='landing-lead'>
+          A smart chore manager that assigns, rotates, and tracks household
+          tasks so everyone does their fair share.
+        </p>
+      </header>
 
-      <div className='claim-board'>
-        <section className='claim-column'>
-          <img className='logo-image' src={robinImage} alt='Round Robin bird logo' />
-          <h2 className='page-title'>About</h2>
-          <p className='page-subtitle'>
-            Round Robin is a smart chore manager that assigns, rotates, and tracks
-            household tasks so everyone does their fair share.
+      <div className='landing-options'>
+        <form
+          className='landing-card'
+          onSubmit={(event) => handleOpenAuthModal(event, groupActions.join)}
+        >
+          <h2>Join a group</h2>
+          <p className='landing-card-help'>
+            Enter the invite code a housemate shared with you.
           </p>
+          <label className='landing-field'>
+            Invite code
+            <input type='text' name='inviteCode' placeholder='e.g. 330 258' />
+          </label>
+          <button type='submit' className='landing-button'>Join</button>
+        </form>
 
-          <h2 className='page-title'>How to get started</h2>
-          <h3>Creating a new group</h3>
-          <ol><li>Click Create.</li><li>An invite code will be generated for you.</li><li>Share the code with your group.</li></ol>
-          <h3>Joining an existing group</h3>
-          <ol><li>Enter the invite code.</li><li>Submit.</li></ol>
-        </section>
-
-        <section className='claim-column'>
-          <form className='add-chore-form card' onSubmit={(event) => handleOpenAuthModal(event, groupActions.join)}>
-            <h2>Join with an invite code</h2>
-            <label>Invite code<input type='text' name='inviteCode' placeholder='e.g. 330 258' /></label>
-            <button type='submit'>Join</button>
-          </form>
-          <form className='add-chore-form card' onSubmit={(event) => handleOpenAuthModal(event, groupActions.create)}>
-            <h2>Create a new group</h2>
-            <button type='submit'>Create</button>
-          </form>
-        </section>
+        <form
+          className='landing-card'
+          onSubmit={(event) => handleOpenAuthModal(event, groupActions.create)}
+        >
+          <h2>Create a group</h2>
+          <p className='landing-card-help'>
+            Start a new group and get an invite code to share with everyone.
+          </p>
+          <button type='submit' className='landing-button'>Create</button>
+        </form>
       </div>
 
-      <dialog ref={authDialogRef} className='card'>
-        <button className='modal-close' type='button' aria-label='Close authentication modal' onClick={() => authDialogRef.current.close()}>×</button>
+      <dialog ref={authDialogRef} className='auth-dialog card'>
+        <button
+          className='modal-close'
+          type='button'
+          aria-label='Close authentication modal'
+          onClick={() => authDialogRef.current.close()}
+        >
+          ×
+        </button>
         {modalView === modes.signUp && signupForm}
         {modalView === modes.signIn && loginForm}
         {modalView === modes.groupName && groupNameForm}
       </dialog>
-    </>
+    </div>
   )
 }

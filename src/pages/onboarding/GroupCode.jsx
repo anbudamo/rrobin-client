@@ -1,4 +1,4 @@
-import robinImage from '../../assets/robin.webp'
+import robinImage from '../../assets/robin.jpg'
 
 export default function Code({ group, onContinue }) {
   return (
